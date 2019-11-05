@@ -1,3 +1,4 @@
 ---
 # tasks file for base-common-jenkins
-- include: create-user-group.yaml
+- include: create-user-group.yml
+- include: install-yum-packages.yml

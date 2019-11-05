@@ -1,0 +1,66 @@
+---
+- name: Install the below listed yum packages
+  become: yes 
+  yum:
+    name: "{{ items }}"
+    state: present
+  loop:
+    - gcc
+    - make
+    - curl-devel
+    - wget
+    - expat-devel
+    - gettext-devel
+    - bzip2
+    - python3
+    - python-jinja2
+    - bc
+    - openssl-devel
+    - zlib-devel
+    - readline-devel
+    - python-devel
+
+
+- name: Install python-crypto for the version 6
+  yum:
+    name: python-crypto
+    state: present
+  when: ansible_distribution_major_version == '6'
+
+- name: Install libffi-devel for the version 7
+  yum:
+    name: libffi-devel
+    state: present
+  when: ansible_distribution_major_version == '7'
+
+
+- name: setting up epel_packages
+  set_fact:
+    epel_softwares:
+      - oniguruma-5.9.5-3.el7,x86_64-5.9.5-3.rpm
+      - jq-1.5-1.el7.x86_64-1.5-1.rpm
+      - libtommath-0.42.0-4.el7.x86_64.rpm
+      - libtomcrypt-1.17.-23.el7.x86_64.rpm
+      - python2-crypto-2.6.1-9.el7.x86_64.rpm
+      - sshpass-1.05-5.el7.x86_64.rpm
+  when: ansible_distribution_major_version == '7'
+
+- name: download epel packages if required
+  
+- name: install epel packages
+  yum:
+    name:  {{ items }}
+    state: present
+  loop:
+    epel_softwares
+
+- name: Install the ' Development tools' package Group
+  yum:
+    name: '@Development tools'
+    state: present
+
+
+
+
+
+
