@@ -1,2 +1,3 @@
 ---
 # tasks file for base-common-jenkins
+- include: create-user-group.yaml

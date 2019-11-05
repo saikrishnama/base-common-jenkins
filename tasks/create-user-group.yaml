@@ -1,0 +1,96 @@
+---
+- name: create application group
+  group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: create app user and assign this user group to whenn group
+  user:
+    name: {{ app_user }}
+    group: {{ app_group }}
+    groups: {{ app_group }},wheel
+    append: true
+    state: present
+
+- name: update permissions for the file
+  file:
+    path: /etc/sudoers.d/wheel-user
+    mode: 0640
+
+- name: update the sudoer.d file for the wheel user as password less
+  lineinfile:
+    dest: /etc/sudoers.d/wheel-user
+    line: "%whell   ALL=(ALL)   ALL"
+
+- name: update the sudoer.d file for the app_user {{ app_user }} passwordless privilages
+  lineinfile:
+    dest: /etc/sudoers.d/wheel-user
+    line: "{{ app_user }}   ALL=(ALL)   NOPASSWD: ALL"
+- name: Rever back  permissions for the file
+  file:
+    path: /etc/sudoers.d/wheel-user
+    mode: 0440
+
+###################################################
+
+#Providing or updating Jenkins Data Dir 
+
+###################################################
+
+- name: Updating or changeing the Jenkins data directory
+  file:
+    path: "{{ jenkins_data_dir }} "
+    owner: {{ app_user }}
+    group: {{ app_group }}
+    mode: 0775
+    state: directory
+
+##############################################################
+
+#Installing the required software
+
+##############################################################
+- name: Install required libeselinx ,unzip
+  yum:
+    name: {{ items }}
+    state: present
+  loop: 
+    - libselinux-python
+    - unzip
+  when: ansible_distribution == 'CentOS'
+
+- name: updating security config files limits.conf
+  copy:
+    src: limits.conf
+    dest: /etc/security/limits.conf
+    backup: yes
+  when: ansible_distribution == 'CentOS'
+
+- name: updating security config files limits.conf
+  copy:
+    src: 90-nproc.conf
+    dest: /etc/security/limits.d/90-nproc.conf
+    backup: yes
+  when: ansible_distribution == 'CentOS'
+
+- name: Create cach path
+  file:
+    path: {{ system_cache_dir }}
+    state: directory
+  connection: local
+
+
+
+
+############################################
+
+# Install pip Virtualenv
+
+############################################
+
+- name: install pip virtula env
+  pip:
+    name: virtualenv
+    become: yes
+
+
