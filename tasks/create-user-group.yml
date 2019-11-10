@@ -52,26 +52,26 @@
 ##############################################################
 - name: Install required libeselinx ,unzip
   yum:
-    name: {{ items }}
+    name: {{ item }}
     state: present
   loop: 
     - libselinux-python
     - unzip
-  when: ansible_distribution == 'CentOS'
+  # when: ansible_distribution == 'CentOS'
 
 - name: updating security config files limits.conf
   copy:
     src: limits.conf
     dest: /etc/security/limits.conf
     backup: yes
-  when: ansible_distribution == 'CentOS'
+  # when: ansible_distribution == 'CentOS'
 
 - name: updating security config files limits.conf
   copy:
     src: 90-nproc.conf
     dest: /etc/security/limits.d/90-nproc.conf
     backup: yes
-  when: ansible_distribution == 'CentOS'
+  # when: ansible_distribution == 'CentOS'
 
 - name: Create cach path
   file:
