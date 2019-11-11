@@ -1,14 +1,14 @@
 ---
 - name: create application group
   group:
-    name: "{{ app_group }}"
+    name: '{{ app_group | default("jenkins") }}'
     state: present
 
 - name: create app user and assign this user group to whenn group
   user:
-    name: {{ app_user }}
-    group: {{ app_group }}
-    groups: {{ app_group }},wheel
+    name: '{{ app_user | default("jenkins") }}'
+    group: '{{ app_group | default("jenkins") }}'
+    groups: '{{ app_group | default("jenkins") }}',wheel
     append: true
     state: present
 
@@ -25,7 +25,7 @@
 - name: update the sudoer.d file for the app_user {{ app_user }} passwordless privilages
   lineinfile:
     dest: /etc/sudoers.d/wheel-user
-    line: "{{ app_user }}   ALL=(ALL)   NOPASSWD: ALL"
+    line: '{{ app_user | default("jenkins")}}   ALL=(ALL)   NOPASSWD: ALL'
 - name: Rever back  permissions for the file
   file:
     path: /etc/sudoers.d/wheel-user
@@ -40,8 +40,8 @@
 - name: Updating or changeing the Jenkins data directory
   file:
     path: "{{ jenkins_data_dir }} "
-    owner: {{ app_user }}
-    group: {{ app_group }}
+    owner: '{{ app_user | default("jenkins") }}'
+    group: '{{ app_group | default("jenkins") }}'
     mode: 0775
     state: directory
 
@@ -52,7 +52,7 @@
 ##############################################################
 - name: Install required libeselinx ,unzip
   yum:
-    name: {{ item }}
+    name: "{{ item }}"
     state: present
   loop: 
     - libselinux-python
@@ -75,7 +75,7 @@
 
 - name: Create cach path
   file:
-    path: {{ system_cache_dir }}
+    path: "{{ system_cache_dir }}"
     state: directory
   connection: local
 
